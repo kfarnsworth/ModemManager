@@ -889,7 +889,7 @@ delete_all_links_ready (QmiDevice    *device,
     }
 
     /* expected data format only applicable to qmi_wwan */
-    if (g_strcmp0 (self->priv->net_driver, "qmi_wwan") == 0) {
+    if (g_str_has_prefix (self->priv->net_driver, "qmi_wwan")) {
         mm_obj_dbg (self, "reseting expected kernel data format to 802.3 in data interface '%s'",
                     mm_port_get_device (MM_PORT (ctx->data)));
         if (!qmi_device_set_expected_data_format (ctx->device, QMI_DEVICE_EXPECTED_DATA_FORMAT_802_3, &error)) {
@@ -1094,7 +1094,7 @@ load_current_kernel_data_modes (MMPortQmi *self,
         return MM_PORT_QMI_KERNEL_DATA_MODE_MUX_RMNET;
 
     /* For USB based setups, query kernel */
-    if (g_strcmp0 (self->priv->net_driver, "qmi_wwan") == 0) {
+    if (g_str_has_prefix (self->priv->net_driver, "qmi_wwan")) {
         switch (qmi_device_get_expected_data_format (device, NULL)) {
         case QMI_DEVICE_EXPECTED_DATA_FORMAT_QMAP_PASS_THROUGH:
             return MM_PORT_QMI_KERNEL_DATA_MODE_MUX_RMNET;
@@ -1130,7 +1130,7 @@ load_supported_kernel_data_modes (MMPortQmi *self,
         return MM_PORT_QMI_KERNEL_DATA_MODE_MUX_RMNET;
 
     /* For USB based setups, we may have all supported */
-    if (g_strcmp0 (self->priv->net_driver, "qmi_wwan") == 0) {
+    if (g_str_has_prefix (self->priv->net_driver, "qmi_wwan")) {
         MMPortQmiKernelDataMode supported = MM_PORT_QMI_KERNEL_DATA_MODE_802_3;
 
         /* If raw-ip is not supported, muxing is also not supported */
@@ -1900,7 +1900,7 @@ internal_setup_data_format_context_step (GTask *task)
         case INTERNAL_SETUP_DATA_FORMAT_STEP_SETUP_MAIN_MTU:
             /* qmi_wwan add_mux/del_mux based logic requires main MTU set to the maximum
              * data aggregation size reported by the modem.  */
-            if (g_strcmp0 (self->priv->net_driver, "qmi_wwan") == 0) {
+            if (g_str_has_prefix (self->priv->net_driver, "qmi_wwan")) {
                 setup_main_mtu (task);
                 return;
             }
@@ -2238,7 +2238,7 @@ qmi_device_open_second_ready (QmiDevice    *qmi_device,
     if (!qmi_device_open_finish (qmi_device, res, &error)) {
         /* Not all devices support raw-ip, which is the first thing we try
          * by default. Detect this case, and retry with 802.3 if so. */
-        if ((g_strcmp0 (self->priv->net_driver, "qmi_wwan") == 0) &&
+        if ((g_str_has_prefix (self->priv->net_driver, "qmi_wwan")) &&
             g_error_matches (error, QMI_PROTOCOL_ERROR, QMI_PROTOCOL_ERROR_INVALID_DATA_FORMAT) &&
             (ctx->kernel_data_modes & MM_PORT_QMI_KERNEL_DATA_MODE_RAW_IP)) {
             /* switch to 802.3 right away, so that the logic can successfully go on after that */

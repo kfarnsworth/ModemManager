@@ -238,6 +238,34 @@ if plugins_shared['xmm']
   }}
 endif
 
+# common quectel support library
+if plugins_shared['quectel']
+  quectel_inc = include_directories('quectel')
+
+  c_args = '-DMM_MODULE_NAME="shared-quectel"'
+
+  sources = files(
+    'quectel/mm-broadband-modem-quectel.c',
+    'quectel/mm-shared-quectel.c',
+    'quectel/mm-shared.c',
+  )
+
+  if enable_qmi
+    sources += files('quectel/mm-broadband-modem-qmi-quectel.c')
+  endif
+
+  if enable_mbim
+    sources += files('quectel/mm-broadband-modem-mbim-quectel.c')
+  endif
+
+  plugins += {'shared-quectel': {
+    'plugin': false,
+    'helper': {'sources': files('quectel/mm-modem-helpers-quectel.c'), 'include_directories': plugins_incs, 'c_args': common_c_args},
+    'module': {'sources': sources, 'include_directories': plugins_incs, 'c_args': c_args},
+    'test': {'sources': files('quectel/tests/test-modem-helpers-quectel.c'), 'include_directories': include_directories('quectel'), 'dependencies': libhelpers_dep},
+  }}
+endif
+
 # plugin: altair lte
 if plugins_options['altair-lte']
   common_c_args = '-DMM_MODULE_NAME="altair-lte"'
@@ -718,27 +746,17 @@ if plugins_options['quectel']
   test_udev_rules_dir_c_args = ['-DTESTUDEVRULESDIR_QUECTEL="@0@"'.format(plugins_dir / 'quectel')]
   plugins_test_udev_rules_dir_c_args += test_udev_rules_dir_c_args
 
+  incs = plugins_incs + [quectel_inc]
+
   common_c_args = test_udev_rules_dir_c_args + ['-DMM_MODULE_NAME="quectel"']
 
   sources = files(
-    'quectel/mm-broadband-modem-quectel.c',
     'quectel/mm-plugin-quectel.c',
-    'quectel/mm-shared-quectel.c',
   )
-
-  if enable_qmi
-    sources += files('quectel/mm-broadband-modem-qmi-quectel.c')
-  endif
-
-  if enable_mbim
-    sources += files('quectel/mm-broadband-modem-mbim-quectel.c')
-  endif
 
   plugins += {'plugin-quectel': {
     'plugin': true,
-    'helper': {'sources': files('quectel/mm-modem-helpers-quectel.c'), 'include_directories': plugins_incs, 'c_args': common_c_args},
     'module': {'sources': sources, 'include_directories': plugins_incs, 'c_args': common_c_args},
-    'test': {'sources': files('quectel/tests/test-modem-helpers-quectel.c'), 'include_directories': include_directories('quectel'), 'dependencies': libhelpers_dep},
   }}
 
   plugins_udev_rules += files('quectel/77-mm-quectel-port-types.rules')
@@ -954,6 +972,25 @@ if plugins_options['zte']
   }}
 
   plugins_udev_rules += files('zte/77-mm-zte-port-types.rules')
+endif
+
+# plugin: netprisma
+if plugins_options['netprisma']
+  test_udev_rules_dir_c_args = ['-DTESTUDEVRULESDIR_NETPRISMA="@0@"'.format(plugins_dir / 'netprisma')]
+  plugins_test_udev_rules_dir_c_args += test_udev_rules_dir_c_args
+
+  incs = plugins_incs + [quectel_inc]
+
+  sources = files(
+    'netprisma/mm-plugin-netprisma.c',
+  )
+
+  plugins += {'plugin-netprisma': {
+    'plugin': true,
+    'module': {'sources': sources, 'include_directories': incs, 'c_args': test_udev_rules_dir_c_args + ['-DMM_MODULE_NAME="netprisma"']},
+  }}
+
+  plugins_udev_rules += files('netprisma/77-mm-netprisma-port-types.rules')
 endif
 
 foreach plugin_name, plugin_data: plugins

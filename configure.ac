@@ -555,6 +555,7 @@ MM_ENABLE_PLUGIN([longcheer])
 MM_ENABLE_PLUGIN([mbm])
 MM_ENABLE_PLUGIN([motorola])
 MM_ENABLE_PLUGIN([mtk])
+MM_ENABLE_PLUGIN([netprisma])
 MM_ENABLE_PLUGIN([nokia])
 MM_ENABLE_PLUGIN([nokia-icera],
                  [with_shared_icera])
@@ -595,6 +596,7 @@ MM_BUILD_SHARED([xmm])
 MM_BUILD_SHARED([telit])
 MM_BUILD_SHARED([foxconn])
 MM_BUILD_SHARED([fibocom])
+MM_BUILD_SHARED([quectel])
 
 dnl-----------------------------------------------------------------------------
 dnl Output
@@ -708,6 +710,7 @@ echo "
       mbm:                     ${enable_plugin_mbm}
       motorola:                ${enable_plugin_motorola}
       mtk:                     ${enable_plugin_mtk}
+      netprisma                ${enable_plugin_netprisma}
       nokia:                   ${enable_plugin_nokia}
       nokia icera:             ${enable_plugin_nokia_icera}
       novatel:                 ${enable_plugin_novatel}

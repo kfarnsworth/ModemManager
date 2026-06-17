@@ -52,6 +52,8 @@ option('plugin_motorola', type: 'feature', value: 'auto', description: 'enable m
 option('plugin_mtk', type: 'feature', value: 'auto', description: 'enable mtk plugin support')
 option('plugin_nokia', type: 'feature', value: 'auto', description: 'enable nokia plugin support')
 
+# netprisma
+option('plugin_netprisma', type: 'feature', value: 'auto', description: 'enable netprisma plugin support')
 # shared_icera
 option('plugin_nokia_icera', type: 'feature', value: 'auto', description: 'enable nokia icera plugin support')
 

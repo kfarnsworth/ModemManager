@@ -3,7 +3,7 @@
 
 project(
   'ModemManager', 'c',
-  version: '1.20.7',
+  version: '1.20.999',
   license: 'GPL2',
   default_options: [
     'buildtype=debugoptimized',
@@ -298,6 +298,7 @@ plugins_shared_reqs = {
   'sierra': true,
   'telit': true,
   'xmm': true,
+  'quectel': true,
 }
 
 
@@ -328,6 +329,7 @@ plugins_options_reqs = {
   'mbm': {'available': true, 'shared': []},
   'motorola': {'available': true, 'shared': []},
   'mtk': {'available': true, 'shared': []},
+  'netprisma': {'available': true, 'shared': ['quectel']},
   'nokia': {'available': true, 'shared': []},
   'nokia-icera': {'available': true, 'shared': ['icera']},
   'novatel': {'available': true, 'shared': ['novatel']},
@@ -336,7 +338,7 @@ plugins_options_reqs = {
   'option-hso': {'available': true, 'shared': ['option']},
   'pantech': {'available': true, 'shared': []},
   'qcom-soc': {'available': enable_qmi, 'shared': []},
-  'quectel': {'available': true, 'shared': []},
+  'quectel': {'available': true, 'shared': ['quectel']},
   'samsung': {'available': true, 'shared': ['icera']},
   'sierra-legacy': {'available': true, 'shared': ['icera', 'sierra']},
   'sierra': {'available': true, 'shared': ['xmm']},

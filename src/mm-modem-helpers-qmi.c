@@ -1798,7 +1798,7 @@ qmi_mobile_equipment_error_from_verbose_call_end_reason_3gpp (QmiWdsVerboseCallE
 QmiDataEndpointType
 mm_port_net_driver_to_qmi_endpoint_type (const gchar *net_driver)
 {
-    if (!g_strcmp0 (net_driver, "qmi_wwan"))
+    if (g_str_has_prefix (net_driver, "qmi_wwan"))
         return QMI_DATA_ENDPOINT_TYPE_HSUSB;
     if (!g_strcmp0 (net_driver, "mhi_net"))
         return QMI_DATA_ENDPOINT_TYPE_PCIE;

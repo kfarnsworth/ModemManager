@@ -352,7 +352,7 @@ peek_port_qmi_for_data (MMBroadbandModemQmi  *self,
 
     net_port_driver = mm_kernel_device_get_driver (mm_port_peek_kernel_device (data));
 
-    if (!g_strcmp0 (net_port_driver, "qmi_wwan"))
+    if (g_str_has_prefix (net_port_driver, "qmi_wwan"))
         return peek_port_qmi_for_data_usb (self, data, out_endpoint, error);
 
     if (!g_strcmp0 (net_port_driver, "mhi_net"))

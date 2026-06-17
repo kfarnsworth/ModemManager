@@ -339,7 +339,7 @@ apply_pre_probing_filters (MMPlugin       *self,
 
             for (j = 0; drivers[j]; j++) {
                 /* If we match the QMI driver: unsupported */
-                if (g_str_equal (drivers[j], "qmi_wwan")) {
+                if (!g_str_has_prefix (drivers[j], "qmi_wwan")) {
                     mm_obj_dbg (self, "port %s filtered by implicit QMI driver", mm_kernel_device_get_name (port));
                     return TRUE;
                 }
@@ -807,7 +807,7 @@ mm_plugin_supports_port (MMPlugin            *self,
         if (self->priv->qcdm || self->priv->qcdm_required)
             probe_run_flags |= MM_PORT_PROBE_QCDM;
     } else if (g_str_equal (mm_kernel_device_get_subsystem (port), "usbmisc")) {
-        if (self->priv->qmi && !g_strcmp0 (mm_kernel_device_get_driver (port), "qmi_wwan"))
+        if (self->priv->qmi && g_str_has_prefix (mm_kernel_device_get_driver (port), "qmi_wwan"))
             probe_run_flags |= MM_PORT_PROBE_QMI;
         else if (self->priv->mbim && !g_strcmp0 (mm_kernel_device_get_driver (port), "cdc_mbim"))
             probe_run_flags |= MM_PORT_PROBE_MBIM;
@@ -1009,11 +1009,12 @@ mm_plugin_create_modem (MMPlugin  *self,
             }
 
             /* Force network ignore rules for devices that use qmi_wwan */
-            if (drivers && g_strv_contains (drivers, "qmi_wwan")) {
+            if (drivers && (g_strv_contains (drivers, "qmi_wwan") ||
+                            g_strv_contains (drivers, "qmi_wwan_q"))) {
 #if defined WITH_QMI
                 if (MM_IS_BROADBAND_MODEM_QMI (modem) &&
                     port_type == MM_PORT_TYPE_NET &&
-                    g_strcmp0 (driver, "qmi_wwan") != 0) {
+                    !g_str_has_prefix (driver, "qmi_wwan")) {
                     /* Non-QMI net ports are ignored in QMI modems */
                     mm_obj_dbg (self, "ignoring non-QMI net port %s in QMI modem", name);
                     force_ignored = TRUE;
@@ -1022,7 +1023,7 @@ mm_plugin_create_modem (MMPlugin  *self,
 
                 if (!MM_IS_BROADBAND_MODEM_QMI (modem) &&
                     port_type == MM_PORT_TYPE_NET &&
-                    g_strcmp0 (driver, "qmi_wwan") == 0) {
+                    g_str_has_prefix (driver, "qmi_wwan")) {
                     /* QMI net ports are ignored in non-QMI modems */
                     mm_obj_dbg (self, "ignoring QMI net port %s in non-QMI modem", name);
                     force_ignored = TRUE;
@@ -1030,7 +1031,7 @@ mm_plugin_create_modem (MMPlugin  *self,
                 }
 #else
                 if (port_type == MM_PORT_TYPE_NET &&
-                    g_strcmp0 (driver, "qmi_wwan") == 0) {
+                    g_str_has_prefix (driver, "qmi_wwan")) {
                     /* QMI net ports are ignored if QMI support not built */
                     mm_obj_dbg (self, "ignoring QMI net port %s as QMI support isn't available", name);
                     force_ignored = TRUE;
